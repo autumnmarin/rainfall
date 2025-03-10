@@ -159,3 +159,16 @@ def align_columns(train_df, test_df):
     extra_cols = set(test_df.columns) - set(train_df.columns)
     test_df.drop(columns=extra_cols, inplace=True)
     return test_df[train_df.columns]
+
+import matplotlib.pyplot as plt
+
+def plot_feature_importance(model, feature_names, top_n=20, title="Feature Importance"):
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1][:top_n]  # Top N features
+
+    plt.figure(figsize=(10, 6))
+    plt.title(title)
+    plt.bar(range(len(indices)), importances[indices], align='center')
+    plt.xticks(range(len(indices)), [feature_names[i] for i in indices], rotation=90)
+    plt.tight_layout()
+    plt.show()
