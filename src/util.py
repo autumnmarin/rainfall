@@ -172,3 +172,114 @@ def plot_feature_importance(model, feature_names, top_n=20, title="Feature Impor
     plt.xticks(range(len(indices)), [feature_names[i] for i in indices], rotation=90)
     plt.tight_layout()
     plt.show()
+
+# Add this in util.py
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+
+# Add this in util.py
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+
+def plot_roc_curve(y_true, y_probs, model_name="Model"):
+    """
+    Plot ROC curve and AUC score.
+
+    Parameters:
+    -----------
+    y_true : array-like
+        True binary labels (0 or 1).
+    y_probs : array-like
+        Predicted probabilities for the positive class.
+    model_name : str
+        Label for the model in the plot.
+    """
+    fpr, tpr, _ = roc_curve(y_true, y_probs)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'{model_name} (AUC = {roc_auc:.4f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.grid(alpha=0.3)
+    plt.show()
+
+# Add this to util.py
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+def plot_confusion_matrix(y_true, y_pred, labels=None, title="Confusion Matrix", cmap='Blues'):
+    """
+    Plot a confusion matrix with true vs predicted labels.
+
+    Parameters:
+    -----------
+    y_true : array-like
+        True class labels.
+    y_pred : array-like
+        Predicted class labels.
+    labels : list or None
+        List of class labels to display. If None, auto-detect from y_true.
+    title : str
+        Title of the plot.
+    cmap : str
+        Color map for the heatmap.
+    """
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    disp.plot(ax=ax, cmap=cmap, colorbar=False)
+    plt.title(title)
+    plt.show()
+
+# Add this to util.py
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import learning_curve
+
+def plot_learning_curve(estimator, X, y, cv=5, scoring='roc_auc', train_sizes=np.linspace(0.1, 1.0, 5), random_state=42):
+    """
+    Plots a learning curve showing model performance as training size increases.
+
+    Parameters:
+    -----------
+    estimator : object
+        The model to evaluate (must implement fit and predict).
+    X : array-like
+        Feature dataset.
+    y : array-like
+        Target labels.
+    cv : int
+        Number of cross-validation folds.
+    scoring : str
+        Scoring metric for evaluation (default: 'roc_auc').
+    train_sizes : array-like
+        List of training set sizes (fractions or counts).
+    random_state : int
+        Random seed for reproducibility.
+    """
+    train_sizes, train_scores, valid_scores = learning_curve(
+        estimator, X, y, cv=cv, scoring=scoring, train_sizes=train_sizes, random_state=random_state, n_jobs=-1
+    )
+
+    train_scores_mean = np.mean(train_scores, axis=1)
+    valid_scores_mean = np.mean(valid_scores, axis=1)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(train_sizes, train_scores_mean, 'o-', color='blue', label='Training score')
+    plt.plot(train_sizes, valid_scores_mean, 'o-', color='green', label='Cross-validation score')
+    plt.title('Learning Curve')
+    plt.xlabel('Training Set Size')
+    plt.ylabel(scoring)
+    plt.legend(loc='best')
+    plt.grid(True)
+    plt.show()
